@@ -1,7 +1,17 @@
 package Controller;
 
+import Model.Account;
+import Model.Message;
+import Service.AccountService;
+import Service.MessageService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
+import java.util.List;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -9,6 +19,13 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
+    AccountService accountService;
+    MessageService messageService;
+
+    public SocialMediaController(){
+        this.accountService = new AccountService();
+        this.messageService = new MessageService();
+    }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
@@ -17,6 +34,15 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
+        app.post("/register", this::postUserHandler);
+        app.post("/login", this::postLoginHandler);
+        app.post("/messages", this::postMessagesHandler);
+        app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageByMsgIdHandler);
+        app.delete("messages/{message_id}", this::deleteMessageByMsgIdHandler);
+        app.patch("/messages/message_id", this::updateMessageByMsgIdHandler);
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByUserIdHandler);
+        app.start(8080);
 
         return app;
     }
@@ -25,9 +51,96 @@ public class SocialMediaController {
      * This is an example handler for an example endpoint.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void exampleHandler(Context context) {
+    private void exampleHandler(Context context){
         context.json("sample text");
     }
 
+    /*Handler to post a new account */
+    //should include account_id
+    private void postUserHandler(Context ctx)throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account addedUser = accountService.addAccount(account);
+        if (addedUser.username != null && addedUser.password.length() >= 4 ){
+            ctx.json(mapper.writeValueAsString(addedUser));
+            ctx.status(200);
+        }else{
+            ctx.status(400);
+        }
 
+    }
+
+    /*Handler to verify a new account*/
+    private void postLoginHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
+        Account user = accountService.verifyAccount(account);
+        if (user.username != null && user.password != null){
+            ctx.json(mapper.writeValueAsString(user));
+            ctx.status(200);
+        }else{
+            ctx.status(401);
+        }
+    }
+
+    /*Handler to post/submit a message */
+    //will not contain a message id
+    private void postMessagesHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        Message addedMessage = messageService.addMessage(message);
+        if (addedMessage.message_text != null && addedMessage.message_text.length() < 255 && addedMessage.posted_by > 0){
+            ctx.json(mapper.writeValueAsString(addedMessage));
+            ctx.status(200);
+        }else{
+            ctx.status(400);
+        }
+    } 
+
+    /*Handler to get all messages in the db*/
+    private void getAllMessagesHandler(Context ctx){
+        List <Message> messages = messageService.getAllMessages();
+        ctx.json(messages);
+    }
+
+    /*Handler to get message by the message id*/
+    private void getMessageByMsgIdHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message requestedMessage = messageService.getMessageByMsgId(message_id, message);
+        ctx.json(mapper.writeValueAsString(requestedMessage));
+    }
+
+    /*Handler to delete message by the message id */
+    private void deleteMessageByMsgIdHandler (Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message deletedMessage = messageService.getMessageByMsgId(message_id, message);
+        ctx.json(deletedMessage);
+    }
+    /*Handler to update message by the message id */
+    private void updateMessageByMsgIdHandler (Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message updatedMessage = messageService.getMessageByMsgId(message_id, message);
+        if (updatedMessage.message_id > 0 && updatedMessage.message_text != null 
+        && updatedMessage.message_text.length() < 255){
+            ctx.json(mapper.writeValueAsString(updatedMessage));
+        }else{
+            ctx.status(400);
+        }
+    }
+    
+    /*Handler to get all messages by the account id  */
+    private void getAllMessagesByUserIdHandler (Context ctx) throws JsonProcessingException{
+        // ObjectMapper mapper = new ObjectMapper();
+        // Message message = mapper.readValue(ctx.body(), Message.class);
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+        List <Message> userMessages = messageService.getAllMessagesByUserId(account_id, usersMessages);
+        ctx.json(userMessages);
+    }
+   
 }
