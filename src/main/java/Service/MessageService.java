@@ -37,7 +37,7 @@ public class MessageService {
         return null;
     }
 
-    public List<Message> getAllMessagesByUserId (int account_id, Message message){
+    public List<Message> getAllMessagesByUserId (int account_id){
         return null;
     }
 

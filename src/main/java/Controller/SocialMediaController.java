@@ -139,7 +139,7 @@ public class SocialMediaController {
         // ObjectMapper mapper = new ObjectMapper();
         // Message message = mapper.readValue(ctx.body(), Message.class);
         int account_id = Integer.parseInt(ctx.pathParam("account_id"));
-        List <Message> userMessages = messageService.getAllMessagesByUserId(account_id, usersMessages);
+        List <Message> userMessages = messageService.getAllMessagesByUserId(account_id);
         ctx.json(userMessages);
     }
    
