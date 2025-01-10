@@ -17,28 +17,40 @@ public class MessageService {
     }
 
     public Message addMessage (Message message){
+        message = messageDAO.postMessage(message);
         return message;
     }
 
     public List<Message> getAllMessages(){
-        //return messageDAO.getAllMessages;
-        return null;
+        return messageDAO.getAllMessages();
     }
 
     public Message getMessageByMsgId (int message_id, Message message){
-        return null;
+        if (messageDAO.getMessageByMessageId(message_id) != null){
+            return messageDAO.getMessageByMessageId(message_id);
+        } else{
+            return null;
+        }
     }
 
     public Message deleteMessageByMsgId (int message_id, Message message){
-        return null;
+        if (messageDAO.getMessageByMessageId(message_id) != null){
+            return messageDAO.getMessageByMessageId(message_id);
+        } else{
+            return null;
+        }
     }
 
     public Message updateMessage (int message_id, Message message){
-        return null;
+        if (messageDAO.getMessageByMessageId(message_id) != null){
+            return messageDAO.getMessageByMessageId(message_id);
+        } else{
+            return null;
+        }
     }
 
     public List<Message> getAllMessagesByUserId (int account_id){
-        return null;
+        return messageDAO.getAllMessagesByUserId(account_id);
     }
 
 }

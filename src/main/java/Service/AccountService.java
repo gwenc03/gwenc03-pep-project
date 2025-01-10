@@ -2,7 +2,6 @@ package Service;
 
 import Model.Account;
 import DAO.AccountDAO;
-import java.util.List;
 
 
 public class AccountService {
@@ -17,13 +16,17 @@ public class AccountService {
     }
 
     public Account addAccount (Account account){
-        //account = accountDAO.insertAccount(account);
+        account = accountDAO.insertAccount(account);
         return account;
     }    
 
     //should not have an account_id
     public Account verifyAccount(Account account){
         //need to check if user and pass exist
-        return account;
+        if (account.getUsername() != null && account.getPassword() != null){
+            return account;
+        }else{
+            return null;
+        }
     }
 }
