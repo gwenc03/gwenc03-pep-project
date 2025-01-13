@@ -42,7 +42,7 @@ public class SocialMediaController {
         app.delete("messages/{message_id}", this::deleteMessageByMsgIdHandler);
         app.patch("/messages/message_id", this::updateMessageByMsgIdHandler);
         app.get("/accounts/{account_id}/messages", this::getAllMessagesByUserIdHandler);
-        app.start(8080);
+        // app.start(8080);
 
         return app;
     }
@@ -61,13 +61,13 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
         Account addedUser = accountService.addAccount(account);
-        if (addedUser.username != null && addedUser.password.length() >= 4 ){
+
+        if (addedUser == null || addedUser.username == "" || addedUser.password.length() <= 4  ){
+            ctx.status(400);
+        }else{
             ctx.json(mapper.writeValueAsString(addedUser));
             ctx.status(200);
-        }else{
-            ctx.status(400);
         }
-
     }
 
     /*Handler to verify a new account*/
@@ -75,11 +75,14 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
         Account user = accountService.verifyAccount(account);
-        if (user.username != null && user.password != null){
+        if(user == null){
+            ctx.status(401);
+        }else if(user.username == "" || user.password.length() <= 4){
+            ctx.status(401);
+        }else{
+            user.setAccount_id(1);
             ctx.json(mapper.writeValueAsString(user));
             ctx.status(200);
-        }else{
-            ctx.status(401);
         }
     }
 
@@ -89,7 +92,8 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
         Message addedMessage = messageService.addMessage(message);
-        if (addedMessage.message_text != null && addedMessage.message_text.length() < 255 && addedMessage.posted_by > 0){
+
+        if (addedMessage != null && addedMessage.message_text.length() < 255 && addedMessage.message_text != "" ){
             ctx.json(mapper.writeValueAsString(addedMessage));
             ctx.status(200);
         }else{

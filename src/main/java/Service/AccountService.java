@@ -23,10 +23,6 @@ public class AccountService {
     //should not have an account_id
     public Account verifyAccount(Account account){
         //need to check if user and pass exist
-        if (account.getUsername() != null && account.getPassword() != null){
-            return account;
-        }else{
-            return null;
-        }
+        return accountDAO.verifyAccount(account);
     }
 }
