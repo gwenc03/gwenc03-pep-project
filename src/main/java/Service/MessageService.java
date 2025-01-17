@@ -41,10 +41,11 @@ public class MessageService {
         }
     }
 
-    public Message updateMessage (int message_id, Message message){ ////add a String new_message object?
+    public Message updateMessage (int message_id, Message message, String new_message){ ////add a String new_message object?
         if (messageDAO.getMessageByMessageId(message_id) != null){
-            // message.setMessage_text(new_message);
-            //messageDAO.updateMessage(message_id, message, new_message);
+            message.setMessage_text(new_message);
+            // messageDAO.updateMessage(message_id, message, new_message);
+            // messageDAO.updateMessage(message_id, message);
             return messageDAO.getMessageByMessageId(message_id);
         } else{
             return null;

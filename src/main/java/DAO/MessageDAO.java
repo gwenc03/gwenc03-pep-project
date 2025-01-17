@@ -100,7 +100,7 @@ public class MessageDAO {
         }
     }
     
-    public void updateMessage (int id, Message message, String new_message){ //add a String new_message object?
+    public void updateMessage (int id, Message message){ //add a String new_message object?
         Connection connection = ConnectionUtil.getConnection();
         try{
             String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?;";
@@ -110,13 +110,14 @@ public class MessageDAO {
             // System.out.print("NEW MESSAGE: " + new_message);
 
             preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(2, new_message);
+            preparedStatement.setString(2, message.getMessage_text());
             preparedStatement.setLong(3, message.getTime_posted_epoch());
             preparedStatement.setInt(4, id);
 
             preparedStatement.executeUpdate();
 
         }catch(SQLException e){
+            System.out.println("in catch block");
             System.out.println(e.getMessage());
         }
     }

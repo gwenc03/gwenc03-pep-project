@@ -141,7 +141,13 @@ public class SocialMediaController {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         // String new_message = mapper.readValue(ctx.body(), message.message_text);
         // String new_message = String.valueOf(message.getMessage_text());
-        Message updatedMessage = messageService.updateMessage(message_id, message);
+        //------
+        // message.setMessage_text(message.message_text);
+        System.out.println("New message text: " + message.message_text);
+        // String new_message = message.message_text;
+        //----
+        // Message updatedMessage = messageService.updateMessage(message_id, message, new_message);
+        Message updatedMessage = messageService.updateMessage(message_id, message, message.message_text);
         System.out.println("--UPDATED MESSAGE--");
         System.out.println(updatedMessage);
         if (message != null && updatedMessage != null && updatedMessage.message_text != "" && updatedMessage.message_text.length() < 255){
