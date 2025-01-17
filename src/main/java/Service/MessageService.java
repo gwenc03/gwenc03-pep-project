@@ -25,7 +25,7 @@ public class MessageService {
         return messageDAO.getAllMessages();
     }
 
-    public Message getMessageByMsgId (int message_id, Message message){
+    public Message getMessageByMsgId (int message_id){
         if (messageDAO.getMessageByMessageId(message_id) != null){
             return messageDAO.getMessageByMessageId(message_id);
         } else{
@@ -33,7 +33,7 @@ public class MessageService {
         }
     }
 
-    public Message deleteMessageByMsgId (int message_id, Message message){
+    public Message deleteMessageByMsgId (int message_id){
         if (messageDAO.getMessageByMessageId(message_id) != null){
             return messageDAO.getMessageByMessageId(message_id);
         } else{
@@ -41,8 +41,10 @@ public class MessageService {
         }
     }
 
-    public Message updateMessage (int message_id, Message message){
+    public Message updateMessage (int message_id, Message message){ ////add a String new_message object?
         if (messageDAO.getMessageByMessageId(message_id) != null){
+            // message.setMessage_text(new_message);
+            //messageDAO.updateMessage(message_id, message, new_message);
             return messageDAO.getMessageByMessageId(message_id);
         } else{
             return null;

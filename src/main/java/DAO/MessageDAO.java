@@ -40,8 +40,10 @@ public class MessageDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                Message message = new Message(rs.getInt("posted_by"), rs.getString("message_text"), 
-                rs.getLong("time_posted_epoch"));
+                Message message = new Message( rs.getInt("message_id"),
+                    rs.getInt("posted_by"), 
+                    rs.getString("message_text"), 
+                    rs.getLong("time_posted_epoch"));
                 messages.add(message);
             } 
 
@@ -98,16 +100,19 @@ public class MessageDAO {
         }
     }
     
-    public void updateMessage (int message_id, Message message){
+    public void updateMessage (int id, Message message, String new_message){ //add a String new_message object?
         Connection connection = ConnectionUtil.getConnection();
         try{
             String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
+            // message.setMessage_text(new_message);
+            // System.out.print("NEW MESSAGE: " + new_message);
+
             preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setString(2, new_message);
             preparedStatement.setLong(3, message.getTime_posted_epoch());
-            preparedStatement.setInt(4, message_id);
+            preparedStatement.setInt(4, id);
 
             preparedStatement.executeUpdate();
 
@@ -121,14 +126,15 @@ public class MessageDAO {
         List <Message> userMessages = new ArrayList<>();
 
         try{
-            String sql = "SELECT * FROM message WHERE account_id = ?;";
+            String sql = "SELECT * FROM message WHERE posted_by = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setInt(1, account_id);
 
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                Message message = new Message(rs.getInt("posted_by"),
+                Message message = new Message(rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
                     rs.getString("message_text"),
                     rs.getLong("time_posted_epoch"));
                 userMessages.add(message);
