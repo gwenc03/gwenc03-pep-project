@@ -35,17 +35,17 @@ public class MessageService {
 
     public Message deleteMessageByMsgId (int message_id){
         if (messageDAO.getMessageByMessageId(message_id) != null){
-            return messageDAO.getMessageByMessageId(message_id);
+            Message deletedMessage = messageDAO.getMessageByMessageId(message_id);
+            messageDAO.deleteMessage(message_id);
+            return deletedMessage;
         } else{
             return null;
         }
     }
 
-    public Message updateMessage (int message_id, Message message, String new_message){ ////add a String new_message object?
+    public Message updateMessage (int message_id, Message message, String new_message){
         if (messageDAO.getMessageByMessageId(message_id) != null){
-            message.setMessage_text(new_message);
-            // messageDAO.updateMessage(message_id, message, new_message);
-            // messageDAO.updateMessage(message_id, message);
+            messageDAO.updateMessage(message_id, message, new_message);
             return messageDAO.getMessageByMessageId(message_id);
         } else{
             return null;

@@ -20,9 +20,7 @@ public class AccountService {
         return account;
     }    
 
-    //should not have an account_id
     public Account verifyAccount(Account account){
-        //need to check if user and pass exist
         return accountDAO.verifyAccount(account);
     }
 }

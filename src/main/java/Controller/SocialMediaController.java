@@ -42,7 +42,6 @@ public class SocialMediaController {
         app.delete("messages/{message_id}", this::deleteMessageByMsgIdHandler);
         app.patch("/messages/{message_id}", this::updateMessageByMsgIdHandler);
         app.get("/accounts/{account_id}/messages", this::getAllMessagesByUserIdHandler);
-        // app.start(8080);
 
         return app;
     }
@@ -56,7 +55,6 @@ public class SocialMediaController {
     }
 
     /*Handler to post a new account */
-    //should include account_id
     private void postUserHandler(Context ctx)throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
@@ -108,9 +106,7 @@ public class SocialMediaController {
     /*Handler to get message by the message id*/
     private void getMessageByMsgIdHandler(Context ctx) throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
-        // Message message = mapper.readValue(ctx.body(), Message.class);
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        // Message requestedMessage = messageService.getMessageByMsgId(message_id, message);
         Message requestedMessage = messageService.getMessageByMsgId(message_id);
         System.out.println(requestedMessage);
         if (requestedMessage != null){
@@ -139,28 +135,20 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        // String new_message = mapper.readValue(ctx.body(), message.message_text);
-        // String new_message = String.valueOf(message.getMessage_text());
-        //------
-        // message.setMessage_text(message.message_text);
-        System.out.println("New message text: " + message.message_text);
-        // String new_message = message.message_text;
-        //----
-        // Message updatedMessage = messageService.updateMessage(message_id, message, new_message);
         Message updatedMessage = messageService.updateMessage(message_id, message, message.message_text);
-        System.out.println("--UPDATED MESSAGE--");
         System.out.println(updatedMessage);
-        if (message != null && updatedMessage != null && updatedMessage.message_text != "" && updatedMessage.message_text.length() < 255){
+        if (updatedMessage == null){
+            ctx.status(400);
+        } else if (message.message_text.length() > 255 || updatedMessage.message_text == ""){
+            ctx.status(400);
+        }else{
             ctx.json(mapper.writeValueAsString(updatedMessage));
             ctx.status(200);
-        }else{
-            ctx.status(400);
         }
     }
     
     /*Handler to get all messages by the account id  */
     private void getAllMessagesByUserIdHandler (Context ctx) throws JsonProcessingException{
-        
         int account_id = Integer.parseInt(ctx.pathParam("account_id"));
         List <Message> userMessages = messageService.getAllMessagesByUserId(account_id);
         ctx.json(userMessages);
